@@ -1,0 +1,343 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: srinimarva@gmail.com
+    name: Srinivasan Ramu
+  description: REST APIs to manage dealers
+  title: Dealer Management System
+  version: 1.0.0
+servers:
+- url: https://localhost:8082
+paths:
+  /users/adminUserSignUp:
+    description: To signup a new admin user
+    post:
+      description: To signup a new admin user
+      operationId: adminUserSignUp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/adminUser'
+        description: Admin User SignUp Request
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/adminUser'
+          description: Admin user created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Error in signing up new admin user
+      summary: Admin User SignUp
+      x-content-type: application/json
+      x-accepts: application/json
+    summary: Admin User SignUp
+  /users/adminUserSignIn:
+    description: To signin an admin user
+    post:
+      description: To signin an admin user
+      operationId: adminUserSignIn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/signInRequest'
+        description: Admin User SignIn Request
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token'
+          description: Admin user signed in successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Authentication failed
+      summary: Admin User SignIn
+      x-content-type: application/json
+      x-accepts: application/json
+    summary: Admin User SignIn
+  /dealers/addNew:
+    description: To add a new dealer
+    post:
+      description: To add a new dealer
+      operationId: Add New Dealer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/dealer'
+        description: Dealer Details
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dealer'
+          description: Dealer added successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Error in adding dealer
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: User not authorized for adding dealer
+      security:
+      - bearerAuth: []
+      summary: Add New Dealer
+      x-content-type: application/json
+      x-accepts: application/json
+    summary: Add New Dealer
+  /dealers/{dealerId}:
+    delete:
+      description: To delete an existing dealer
+      operationId: Delete Existing Dealer
+      parameters:
+      - description: Unique id of the dealer
+        explode: false
+        in: path
+        name: dealerId
+        required: true
+        schema:
+          example: 34089
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/information'
+          description: Dealer deleted successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: User not authorized for deleting dealer
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Dealer not found
+      security:
+      - bearerAuth: []
+      summary: Delete Existing Dealer
+      x-accepts: application/json
+    get:
+      description: To get an existing dealer
+      operationId: Get Existing Dealer
+      parameters:
+      - description: Unique id of the dealer
+        explode: false
+        in: path
+        name: dealerId
+        required: true
+        schema:
+          example: 34089
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dealer'
+          description: Dealer retrieved successfully
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Dealer not found
+      summary: Get Existing Dealer
+      x-accepts: application/json
+    put:
+      description: To update an existing dealer
+      operationId: Update Existing Dealer
+      parameters:
+      - description: Unique id of the dealer
+        explode: false
+        in: path
+        name: dealerId
+        required: true
+        schema:
+          example: 34089
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/dealer'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dealer'
+          description: Dealer updated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Error in updating dealer
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: User not authorized for updating dealer
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Dealer not found
+      security:
+      - bearerAuth: []
+      summary: Update Existing Dealer
+      x-content-type: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    adminUser:
+      description: Admin User
+      example:
+        firstName: firstName
+        lastName: lastName
+        emailAddress: emailAddress
+        password: password
+        userName: userName
+      properties:
+        firstName:
+          description: First name of the admin user
+          type: string
+        lastName:
+          description: Last name of the admin user
+          type: string
+        emailAddress:
+          description: Email address of the admin user
+          type: string
+        userName:
+          description: Username of the admin user
+          type: string
+        password:
+          description: Password of the admin user
+          type: string
+      required:
+      - emailAddress
+      - firstName
+      - lastName
+      - password
+      - userName
+      type: object
+    dealer:
+      description: Dealer
+      example:
+        dealerName: dealerName
+        dealerZipCode: 6
+        dealerAddress: dealerAddress
+        dealerId: 0
+        dealerCity: dealerCity
+        dealerState: dealerState
+      properties:
+        dealerId:
+          description: Unique id of the dealer
+          type: integer
+        dealerName:
+          description: Name of the dealer
+          type: string
+        dealerAddress:
+          description: Address of the dealer
+          type: string
+        dealerCity:
+          description: City of the dealer
+          type: string
+        dealerState:
+          description: State of the dealer
+          type: string
+        dealerZipCode:
+          description: Zip Code of the dealer
+          type: integer
+      required:
+      - dealerAddress
+      - dealerCity
+      - dealerId
+      - dealerName
+      - dealerState
+      - dealerZipCode
+      type: object
+    error:
+      description: Error
+      properties:
+        id:
+          description: Unique id representing the type of an error
+          type: string
+        message:
+          description: Meaningful message about what went wrong
+          type: string
+      required:
+      - id
+      - message
+      type: object
+    information:
+      description: Information
+      example:
+        message: message
+      properties:
+        message:
+          description: Meaningful message about successful completion of an operation
+          type: string
+      required:
+      - message
+      type: object
+    signInRequest:
+      description: SignIn Request
+      properties:
+        userName:
+          description: Username of the admin user
+          type: string
+        password:
+          description: Password of the admin user
+          type: string
+      required:
+      - password
+      - userName
+      type: object
+    token:
+      description: Token
+      example:
+        userName: userName
+        jwtCode: jwtCode
+      properties:
+        userName:
+          description: Username of the admin user
+          type: string
+        jwtCode:
+          description: JWT Token
+          type: string
+      required:
+      - jwtCode
+      - userName
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
