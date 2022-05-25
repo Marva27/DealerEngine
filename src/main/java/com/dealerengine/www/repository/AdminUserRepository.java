@@ -8,5 +8,6 @@ public interface AdminUserRepository extends MongoRepository<AdminUser, String> 
 	
 	public AdminUser findByUserName(String userName);
 	public AdminUser findByEmailAddress(String emailAddress);
+	public AdminUser findByUserNameIgnoreCaseAndPassword(String userName, String password);
 
 }

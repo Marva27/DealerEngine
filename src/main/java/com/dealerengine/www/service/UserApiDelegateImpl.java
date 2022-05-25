@@ -3,6 +3,8 @@ package com.dealerengine.www.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.dealerengine.www.api.UsersApiDelegate;
@@ -12,6 +14,7 @@ import com.dealerengine.www.model.AdminUser;
 import com.dealerengine.www.model.SignInRequest;
 import com.dealerengine.www.model.Token;
 import com.dealerengine.www.repository.AdminUserRepository;
+import com.dealerengine.www.util.JwtTokenManager;
 
 @Service
 public class UserApiDelegateImpl implements UsersApiDelegate {
@@ -20,12 +23,32 @@ public class UserApiDelegateImpl implements UsersApiDelegate {
 	private Validation validation;
 	
 	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private  JwtTokenManager jwtTokenManager;
+	
+	@Autowired
 	private AdminUserRepository adminUserRepository;
+	
+	@Autowired
+	private ApplicationUserDetailsService applicationUserDetailsService;
 
 	@Override
 	public ResponseEntity<Token> adminUserSignIn(SignInRequest signInRequest) {
-		// TODO Auto-generated method stub
-		return UsersApiDelegate.super.adminUserSignIn(signInRequest);
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					signInRequest.getUserName(), 
+					signInRequest.getPassword()));
+		}catch(Exception e) {
+			throw new ApplicationError(ApplicationError.ErrorType.securityError, "userName|password", "invalid_credentials");
+		}
+	
+		Token token = new Token();
+		token.setJwtCode(jwtTokenManager.generateToken(applicationUserDetailsService.loadUserByUsername(signInRequest.getUserName())));
+		token.setUserName(signInRequest.getUserName());
+		
+		return new ResponseEntity<Token>(token, HttpStatus.OK);
 	}
 
 	@Override
